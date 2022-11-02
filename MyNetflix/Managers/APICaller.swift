@@ -12,7 +12,7 @@ struct Constants {
     static let baseURL = "https://api.themoviedb.org"
 }
 
-enum APIError {
+enum APIError: Error {
     case failedToGetData
 }
 
@@ -32,6 +32,7 @@ class APICaller {
                 //                print(result)
                 let result = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
                 completion(.success(result.results))
+                print(result.results)
             } catch {
                 completion(.failure(error))
             }
@@ -46,12 +47,10 @@ class APICaller {
                 return
             }
             do {
-                //                let results = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
-                //                print(results)
                 let result = try JSONDecoder().decode(TrendingTvResponse.self, from: data)
                 completion(.success(result.results))
             } catch {
-                completion(.failure(error))
+                completion(.failure(APIError.failedToGetData))
                 
             }
             
@@ -69,7 +68,7 @@ class APICaller {
                 let results = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
                 completion(.success(results.results))
             } catch {
-                completion(.failure(error))
+                completion(.failure(APIError.failedToGetData))
             }
             
         }
@@ -83,9 +82,8 @@ class APICaller {
             do {
                 let result = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
                 completion(.success(result.results))
-                print(result.results)
             } catch {
-                completion(.failure(error))
+                completion(.failure(APIError.failedToGetData))
             }
         }
         task.resume()
@@ -97,13 +95,12 @@ class APICaller {
             guard let data = data, error == nil else { return }
             do {
                 let results = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
+                completion(.success(results.results))
             } catch {
-                completion(.failure(error))
+                completion(.failure(APIError.failedToGetData))
             }
-            
         }
+        task.resume()
     }
-    
-    
-//https://api.themoviedb.org/3/movie/top_rated?api_key=<<api_key>>&language=en-US&page=1
+
 }

@@ -7,6 +7,10 @@
 
 import UIKit
 
+enum Sections: Int {
+    case TrendingMovies = 0, TrendingTv = 1, Popular = 2, Upcoming = 3, TopRated = 4
+}
+
 class HomeViewController: UIViewController {
     
     let sectionTitles: [String] = ["Trending Movie", "Trending TV", "Popular",  "Upcomming Movies", "Top Rated"]
@@ -27,8 +31,6 @@ class HomeViewController: UIViewController {
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         
         configureNavBar()
-        fetchData()
-        
     }
     
     private func configureNavBar() {
@@ -49,35 +51,7 @@ class HomeViewController: UIViewController {
         
     }
     
-    private func fetchData() {
-        
-//        APICaller.shared.getTrendingMovies { result in
-//            switch result {
-//            case .success(let movies):
-//                print(movies)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-//        APICaller.shared.getTrendingTVs { result in
-//            switch result {
-//            case .success(let tvs):
-//                print(tvs)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-//        APICaller.shared.getUpcomingMovies { result in
-//            
-//        }
-//        
-        APICaller.shared.getPopularMovies { result in
-            
-        }
-        APICaller.shared.getTopRatedMovies { result in
-            
-        }
-    }
+   
 }
 
 extension UIImage {
@@ -101,11 +75,61 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
         
+        switch indexPath.section {
+        case Sections.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies { results in
+                switch results {
+                case.success(let movies):
+                    cell.configureMovies(with: movies)
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            
+        case Sections.TrendingTv.rawValue:
+            APICaller.shared.getTrendingTVs { results in
+                switch results {
+                case.success(let tvShows):
+                    cell.configureTvShows(with: tvShows)
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            
+        case Sections.Popular.rawValue:
+            APICaller.shared.getPopularMovies { results in
+                switch results {
+                case.success(let results):
+                    cell.configureMovies(with: results)
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        case Sections.Upcoming.rawValue:
+            APICaller.shared.getUpcomingMovies { results in
+                switch results {
+                case.success(let movies):
+                    cell.configureMovies(with: movies)
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        case Sections.TopRated.rawValue:
+            APICaller.shared.getTopRatedMovies { results in
+                switch results {
+                case.success(let movies):
+                    cell.configureMovies(with: movies)
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        default:
+            return UITableViewCell()
+        }
         return cell
     }
     
@@ -118,7 +142,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let defaultOffset = view.safeAreaInsets.top
+        let defaultOffset = view.safeAreaInsets.bottom
         let offset = scrollView.contentOffset.y + defaultOffset
         
         navigationController?.navigationBar.transform = .init(translationX: 0, y: .minimum(0, -offset))
