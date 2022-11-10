@@ -10,8 +10,7 @@ import UIKit
 class CollectionViewTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionViewTableViewCell"
-    private var movies: [Movie] = [Movie]()
-    private var tvShows = [Tv]()
+    private var movies = [Movie]()
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -38,14 +37,12 @@ class CollectionViewTableViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         collectionView.frame = contentView.bounds
+//        self.movies(indexpath)
     }
     
-    func configureMovies(with title: [Movie]) {
+    public func configureMovies(with title: [Movie]) {
         self.movies = title
-    }
-    
-    func configureTvShows(with title: [Tv]) {
-        self.tvShows = title
+        collectionView.reloadData()
     }
 }
                                        
@@ -55,13 +52,21 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionViewCell.identifier, for: indexPath) as? TitleCollectionViewCell
         else {
+            print("CollectionView didn't load")
+            return UICollectionViewCell()
+            
+        }
+        if let model = movies[indexPath.item].poster_path {
+            cell.configure(with: model)
+        }
+        else {
+            print("sos 2")
             return UICollectionViewCell()
         }
-        cell.configure(with: "")
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
+        return self.movies.count
     }
 }

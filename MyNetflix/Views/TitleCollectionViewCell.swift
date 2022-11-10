@@ -6,7 +6,7 @@ class TitleCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "TitleCollectionViewCell"
     
-    private var posterView: UIImageView = {
+    private var posterImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         return image
@@ -14,7 +14,7 @@ class TitleCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-
+        self.addSubview(posterImageView)
     }
     
     required init?(coder: NSCoder) {
@@ -22,11 +22,12 @@ class TitleCollectionViewCell: UICollectionViewCell {
     }
     
     override func layoutSubviews() {
-        posterView.frame = contentView.bounds
+        posterImageView.frame = contentView.bounds
     }
     
-    func configure(with model: String) {
-        guard let url = URL(string: model) else { return }
-        posterView.sd_setImage(with: url, completed: nil)
+    public func configure(with model: String) {
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500\(model)") else { return }
+        posterImageView.sd_setImage(with: url, completed: nil)
+        print(url)
     }
 }
