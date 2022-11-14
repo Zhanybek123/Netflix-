@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum Sections: Int, CaseIterable {
+enum Sections: Int {
     case trendingMovies, trendingTv, popular, upcoming, topRated
 }
 
@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
         view.addSubview(homeFeedTable)
         
         homeFeedTable.delegate = self
@@ -161,7 +161,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        40
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        nil
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -177,11 +185,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
+        tableView.backgroundColor = .black
         header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
+//        header.textLabel?.frame = CGRect(x: view.bounds.origin.x + 120, y: view.frame.origin.y/4, width: 100, height: view.frame.height)
+        header.frame = CGRect(x: 20, y: 20, width: 100, height: 100)
         header.textLabel?.textColor = .white
         header.textLabel?.text? = header.textLabel?.text?.capitalizeFirstLetter() ?? ""
     }
     
+    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        tableView.backgroundColor = .blue
+    }
 }
 

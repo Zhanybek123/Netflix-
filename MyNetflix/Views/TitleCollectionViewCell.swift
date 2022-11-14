@@ -8,6 +8,8 @@ class TitleCollectionViewCell: UICollectionViewCell {
     
     private var posterImageView: UIImageView = {
         let image = UIImageView()
+        image.layer.masksToBounds = true
+        image.layer.cornerRadius = 5
         image.contentMode = .scaleAspectFill
         return image
     }()

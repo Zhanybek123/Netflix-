@@ -41,9 +41,9 @@ class HeroHeaderUIView: UIView {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor.clear.cgColor,
-            UIColor.systemBackground.cgColor
+            UIColor.black.cgColor
         ]
-        gradientLayer.frame = self.bounds
+        gradientLayer.frame = bounds
         layer.addSublayer(gradientLayer)
     }
 
@@ -54,8 +54,6 @@ class HeroHeaderUIView: UIView {
         addSubview(playButton)
         addSubview(downloadButton)
         applyConstraints()
-    
-        
     }
     
     private func applyConstraints() {

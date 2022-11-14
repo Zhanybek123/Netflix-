@@ -54,7 +54,6 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
         else {
             print("CollectionView didn't load")
             return UICollectionViewCell()
-            
         }
         if let model = movies[indexPath.item].poster_path {
             cell.configure(with: model)
@@ -63,6 +62,7 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
             print("sos 2")
             return UICollectionViewCell()
         }
+        collectionView.backgroundColor = .black
         return cell
     }
 
