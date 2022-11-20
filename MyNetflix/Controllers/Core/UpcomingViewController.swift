@@ -9,8 +9,6 @@ import UIKit
 
 class UpcomingViewController: UIViewController {
     
-    static let idendifier = "UpcomingViewController"
-
     private var movies = [Movie]()
     
     private let upcomingTableVeiw: UITableView = {
@@ -20,16 +18,19 @@ class UpcomingViewController: UIViewController {
         return table
     }()
     
+    let appearance = UINavigationBarAppearance()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
         view.addSubview(upcomingTableVeiw)
         upcomingTableVeiw.delegate = self
         upcomingTableVeiw.dataSource = self
         fetchData()
         
         title = "Upcoming Movies"
+        configureNavBar()
     }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         upcomingTableVeiw.frame = view.bounds
@@ -48,26 +49,39 @@ class UpcomingViewController: UIViewController {
             }
         }
     }
+    
+   private func configureNavBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.barTintColor = UIColor.black
+        //        navigationController?.navigationItem.largeTitleDisplayMode = .always
+        appearance.titleTextAttributes = [.foregroundColor:UIColor.white]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.backgroundColor = .black
+        navigationItem.standardAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+    }
 }
 
 
 extension UpcomingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        movies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TItleTableViewCell.identifier, for: indexPath) as? TItleTableViewCell else { return UITableViewCell() }
         let moviePath = movies[indexPath.item]
         cell.configureCell(with: UpcomingModel(moviePicturePath: moviePath.poster_path ?? "", title: (moviePath.original_name ?? moviePath.original_title) ?? "Unavailable"))
+        cell.backgroundColor = .black
         return cell
     }
-    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
     
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        140
+    }
     
 }

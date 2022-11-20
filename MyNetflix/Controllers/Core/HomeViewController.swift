@@ -7,14 +7,29 @@
 
 import UIKit
 
-enum Sections: Int {
+enum Sections: Int, CaseIterable {
     case trendingMovies, trendingTv, popular, upcoming, topRated
+    
+    var sectionTitle: String {
+        switch self {
+        case.popular:
+            return "popular"
+        case .trendingMovies:
+            return "trending Movies"
+        case .trendingTv:
+            return "trending Tv"
+        case .upcoming:
+            return "upcoming"
+        case .topRated:
+            return "top Rated"
+        }
+    }
 }
 
 class HomeViewController: UIViewController {
     
-    private var movies = [Movie]()
-    private var tvShows = [Movie]()
+    private var trendingMovies = [Movie]()
+    private var trendingTvShows = [Movie]()
     private var popular = [Movie]()
     private var upcoming = [Movie]()
     private var topRated = [Movie]()
@@ -27,21 +42,23 @@ class HomeViewController: UIViewController {
         return table
     }()
     
+    let navigationBarAppearance = UINavigationBarAppearance()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
         view.addSubview(homeFeedTable)
-        
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         
         configureNavBar()
         
+        
+        
         APICaller.shared.getTrendingMovies { results in
             switch results {
             case.success(let results):
-                self.movies = results
+                self.trendingMovies = results
                 DispatchQueue.main.async {
                     self.homeFeedTable.reloadData()
                 }
@@ -53,7 +70,7 @@ class HomeViewController: UIViewController {
         APICaller.shared.getTrendingTVs { results in
             switch results {
             case.success(let results):
-                self.tvShows = results
+                self.trendingTvShows = results
                 DispatchQueue.main.async {
                     self.homeFeedTable.reloadData()
                 }
@@ -100,13 +117,18 @@ class HomeViewController: UIViewController {
     }
     
     private func configureNavBar() {
+        navigationBarAppearance.configureWithOpaqueBackground()
+        navigationBarAppearance.backgroundColor = .black
+        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+        navigationController?.navigationBar.tintColor = .white
+        
         var image = UIImage(named: "netflix_PNG15")
         image = image?.withRenderingMode(.alwaysOriginal).resizeTo(size: CGSize(width: 25, height: 40))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
             UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)]
-        navigationController?.navigationBar.tintColor = .white
     }
     
     override func viewDidLayoutSubviews() {
@@ -128,7 +150,7 @@ extension UIImage {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sectionTitles.count
+        return Sections.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -139,13 +161,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
-        switch indexPath.section{
-        case Sections.trendingMovies.rawValue:
-            cell.configureMovies(with: movies)
-        case Sections.trendingTv.rawValue:
-            cell.configureMovies(with: tvShows)
+        switch indexPath.section {
         case Sections.popular.rawValue:
             cell.configureMovies(with: popular)
+        case Sections.trendingMovies.rawValue:
+            cell.configureMovies(with: trendingMovies)
+        case Sections.trendingTv.rawValue:
+            cell.configureMovies(with: trendingTvShows)
         case Sections.upcoming.rawValue:
             cell.configureMovies(with: upcoming)
         case Sections.topRated.rawValue:
@@ -161,7 +183,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        return 40
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -173,28 +195,22 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
         let defaultOffset = view.safeAreaInsets.bottom
         let offset = scrollView.contentOffset.y + defaultOffset
-        
         navigationController?.navigationBar.transform = .init(translationX: 0, y: .minimum(0, -offset))
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
+        return Sections.allCases[section].sectionTitle
     }
-
+    
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
         tableView.backgroundColor = .black
         header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-//        header.textLabel?.frame = CGRect(x: view.bounds.origin.x + 120, y: view.frame.origin.y/4, width: 100, height: view.frame.height)
-        header.frame = CGRect(x: 20, y: 20, width: 100, height: 100)
         header.textLabel?.textColor = .white
         header.textLabel?.text? = header.textLabel?.text?.capitalizeFirstLetter() ?? ""
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
-        tableView.backgroundColor = .blue
     }
 }
 
