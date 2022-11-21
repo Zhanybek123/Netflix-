@@ -9,9 +9,11 @@ import UIKit
 
 class SearchResultViewController: UIViewController {
     
+    var searchResults: [Movie] = []
+    
     private let movieTableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "table")
+        table.register(TItleTableViewCell.self, forCellReuseIdentifier: TItleTableViewCell.identifier)
         return table
     }()
 
@@ -26,19 +28,20 @@ class SearchResultViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         movieTableView.frame = view.bounds
+        
     }
-    
 }
 
 extension SearchResultViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        10
+        searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "table", for: indexPath)
-        cell.backgroundColor = .red
-        cell.textLabel?.text = "something"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TItleTableViewCell.identifier, for: indexPath) as? TItleTableViewCell else { return UITableViewCell() }
+        let picturePath = searchResults[indexPath.row]
+        cell.configureCell(with: UpcomingModel(moviePicturePath: picturePath.poster_path ?? "", title: picturePath.original_name ?? picturePath.original_title ?? ""))
+//        cell.textLabel?.text = "something"
         return cell
     }
     

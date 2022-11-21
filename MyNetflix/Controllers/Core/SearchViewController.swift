@@ -28,13 +28,6 @@ class SearchViewController: UIViewController {
         return controller
     }()
     
-    //    private let seachBar: UISearchBar = {
-    //        let searchBar = UISearchBar()
-    //        searchBar.tintColor = .red
-    //        searchBar.barTintColor = .red
-    //        return searchBar
-    //    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(searchTableView)
@@ -42,7 +35,7 @@ class SearchViewController: UIViewController {
         searchTableView.dataSource = self
         fetchData()
         
-        title = "Search"
+        title = "Discover"
         configureNavBar()
         navigationItem.searchController = searchcontroller
     }

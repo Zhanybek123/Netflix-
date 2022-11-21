@@ -118,4 +118,18 @@ class APICaller {
         task.resume()
     }
     
+    func getsearchedMoviesAndTv (withPath: String, completion: @escaping (Result<[Movie], Error>) -> ()) {
+        guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.APIKey)&query=\(withPath)") else { return }
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            do {
+                let result = try JSONDecoder().decode(TrendingMoviesResponse.self, from: data)
+                completion(.success(result.results))
+            
+            }
+            catch {
+                completion(.failure(APIError.failedToGetData))
+            }
+        }
+    }
 }

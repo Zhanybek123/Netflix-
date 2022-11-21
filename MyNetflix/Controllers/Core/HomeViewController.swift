@@ -193,9 +193,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         nil
     }
-    
+    // disapearing navigationBar while scrolling down
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         let defaultOffset = view.safeAreaInsets.bottom
         let offset = scrollView.contentOffset.y + defaultOffset
         navigationController?.navigationBar.transform = .init(translationX: 0, y: .minimum(0, -offset))
