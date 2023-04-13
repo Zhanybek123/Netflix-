@@ -11,41 +11,43 @@ class SearchResultViewController: UIViewController {
     
     var searchResults: [Movie] = []
     
-    private let movieTableView: UITableView = {
-        let table = UITableView(frame: .zero, style: .insetGrouped)
-        table.register(TItleTableViewCell.self, forCellReuseIdentifier: TItleTableViewCell.identifier)
+    let movieCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width / 3 - 10, height: 200)
+        let table = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        table.register(TitleCollectionViewCell.self, forCellWithReuseIdentifier: TitleCollectionViewCell.identifier)
         return table
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        view.addSubview(movieTableView)
-        movieTableView.dataSource = self
-        movieTableView.delegate = self
+        view.addSubview(movieCollectionView)
+        movieCollectionView.dataSource = self
+        movieCollectionView.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        movieTableView.frame = view.bounds
+        movieCollectionView.frame = view.bounds
         
     }
 }
 
-extension SearchResultViewController: UITableViewDataSource, UITableViewDelegate {
+extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        searchResults.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionViewCell.identifier, for: indexPath) as? TitleCollectionViewCell else {return UICollectionViewCell()}
+        let title = searchResults[indexPath.item]
+        cell.configure(with: title.poster_path)
+        return cell
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         searchResults.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TItleTableViewCell.identifier, for: indexPath) as? TItleTableViewCell else { return UITableViewCell() }
-        let picturePath = searchResults[indexPath.row]
-        cell.configureCell(with: UpcomingModel(moviePicturePath: picturePath.poster_path ?? "", title: picturePath.original_name ?? picturePath.original_title ?? ""))
-//        cell.textLabel?.text = "something"
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        50
-    }
 }

@@ -38,6 +38,7 @@ class SearchViewController: UIViewController {
         title = "Discover"
         configureNavBar()
         navigationItem.searchController = searchcontroller
+        searchcontroller.searchResultsUpdater = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -78,7 +79,6 @@ class SearchViewController: UIViewController {
     }
 }
 
-
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         collectionView.backgroundColor = .black
@@ -89,6 +89,28 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionViewCell.identifier, for: indexPath) as? TitleCollectionViewCell else { return UICollectionViewCell() }
         cell.configure(with: movies[indexPath.item].poster_path ?? "")
         return cell
+    }
+}
+
+extension SearchViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        guard let query = searchBar.text,
+                !query.trimmingCharacters(in: .whitespaces).isEmpty,
+                query.trimmingCharacters(in: .whitespaces).count >= 3,
+                let resultsController = searchController.searchResultsController as? SearchResultViewController else {return}
+        APICaller.shared.search(withQuery: query) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case.success(let titles):
+                    resultsController.searchResults = titles
+                    resultsController.movieCollectionView.reloadData()
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
     }
     
     

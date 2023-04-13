@@ -17,7 +17,7 @@ enum Sections: Int, CaseIterable {
         case .trendingMovies:
             return "trending Movies"
         case .trendingTv:
-            return "trending Tv"
+            return "trending Tv Show"
         case .upcoming:
             return "upcoming"
         case .topRated:
@@ -33,8 +33,6 @@ class HomeViewController: UIViewController {
     private var popular = [Movie]()
     private var upcoming = [Movie]()
     private var topRated = [Movie]()
-    
-    let sectionTitles: [String] = ["Trending Movie", "Trending TV", "Popular",  "Upcomming Movies", "Top Rated"]
     
     private let homeFeedTable: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
@@ -52,8 +50,9 @@ class HomeViewController: UIViewController {
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         
         configureNavBar()
-        
-        
+        APICaller.shared.getMovie(with: "harry potter") { results in
+            print(results)
+        }
         
         APICaller.shared.getTrendingMovies { results in
             switch results {
@@ -137,16 +136,6 @@ class HomeViewController: UIViewController {
     }
 }
 
-extension UIImage {
-    func resizeTo(size: CGSize) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-        let image = renderer.image { i in
-            self.draw(in: CGRect(origin: .zero, size: size))
-        }
-        return image.withRenderingMode(self.renderingMode)
-    }
-}
-
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -161,20 +150,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
-        switch indexPath.section {
-        case Sections.popular.rawValue:
-            cell.configureMovies(with: popular)
-        case Sections.trendingMovies.rawValue:
-            cell.configureMovies(with: trendingMovies)
-        case Sections.trendingTv.rawValue:
-            cell.configureMovies(with: trendingTvShows)
-        case Sections.upcoming.rawValue:
-            cell.configureMovies(with: upcoming)
-        case Sections.topRated.rawValue:
-            cell.configureMovies(with: topRated)
-        default:
-            return UITableViewCell()
-        }
+        
+        cell.collectionView.dataSource = self
+        cell.collectionView.delegate = self
+        cell.collectionView.tag = indexPath.section
         return cell
     }
     
@@ -213,3 +192,45 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TitleCollectionViewCell.identifier, for: indexPath) as? TitleCollectionViewCell
+        else {
+            print("CollectionView didn't load")
+            return UICollectionViewCell()
+        }
+        switch collectionView.tag {
+        case Sections.popular.rawValue:
+            cell.configure(with: popular[indexPath.item].poster_path)
+        case Sections.trendingMovies.rawValue:
+            cell.configure(with: trendingMovies[indexPath.item].poster_path)
+        case Sections.trendingTv.rawValue:
+            cell.configure(with: trendingTvShows[indexPath.item].poster_path)
+        case Sections.upcoming.rawValue:
+            cell.configure(with: upcoming[indexPath.item].poster_path)
+        case Sections.topRated.rawValue:
+            cell.configure(with: topRated[indexPath.item].poster_path)
+        default:
+            return UICollectionViewCell()
+        }
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionView.tag {
+        case Sections.popular.rawValue:
+            return popular.count
+        case Sections.trendingMovies.rawValue:
+            return trendingMovies.count
+        case Sections.trendingTv.rawValue:
+            return trendingTvShows.count
+        case Sections.upcoming.rawValue:
+            return upcoming.count
+        case Sections.topRated.rawValue:
+            return topRated.count
+        default:
+            return 0
+        }
+    }
+}
