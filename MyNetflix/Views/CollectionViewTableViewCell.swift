@@ -7,9 +7,12 @@
 
 import UIKit
 
+
+
 class CollectionViewTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionViewTableViewCell"
+    
 
     private(set) lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -37,3 +40,5 @@ class CollectionViewTableViewCell: UITableViewCell {
 //        self.movies(indexpath)
     }
 }
+
+

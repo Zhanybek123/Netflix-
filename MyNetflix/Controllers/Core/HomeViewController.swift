@@ -12,11 +12,11 @@ enum Sections: Int, CaseIterable {
     
     var sectionTitle: String {
         switch self {
-        case.popular:
+        case.trendingMovies:
             return "popular"
-        case .trendingMovies:
-            return "trending Movies"
         case .trendingTv:
+            return "trending Movies"
+        case .popular:
             return "trending Tv Show"
         case .upcoming:
             return "upcoming"
@@ -24,6 +24,10 @@ enum Sections: Int, CaseIterable {
             return "top Rated"
         }
     }
+}
+
+protocol HomeViewControllerDelegate: AnyObject {
+    func HomeViewControllerViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: TitleDitailModel)
 }
 
 class HomeViewController: UIViewController {
@@ -42,6 +46,8 @@ class HomeViewController: UIViewController {
     
     let navigationBarAppearance = UINavigationBarAppearance()
     
+    weak var delegate: HomeViewControllerDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(homeFeedTable)
@@ -50,9 +56,7 @@ class HomeViewController: UIViewController {
         homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         
         configureNavBar()
-        APICaller.shared.getMovie(with: "harry potter") { results in
-            print(results)
-        }
+        self.delegate = self
         
         APICaller.shared.getTrendingMovies { results in
             switch results {
@@ -201,12 +205,12 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return UICollectionViewCell()
         }
         switch collectionView.tag {
-        case Sections.popular.rawValue:
-            cell.configure(with: popular[indexPath.item].poster_path)
         case Sections.trendingMovies.rawValue:
             cell.configure(with: trendingMovies[indexPath.item].poster_path)
         case Sections.trendingTv.rawValue:
             cell.configure(with: trendingTvShows[indexPath.item].poster_path)
+        case Sections.popular.rawValue:
+            cell.configure(with: popular[indexPath.item].poster_path)
         case Sections.upcoming.rawValue:
             cell.configure(with: upcoming[indexPath.item].poster_path)
         case Sections.topRated.rawValue:
@@ -219,12 +223,12 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
-        case Sections.popular.rawValue:
-            return popular.count
         case Sections.trendingMovies.rawValue:
             return trendingMovies.count
         case Sections.trendingTv.rawValue:
             return trendingTvShows.count
+        case Sections.popular.rawValue:
+            return popular.count
         case Sections.upcoming.rawValue:
             return upcoming.count
         case Sections.topRated.rawValue:
@@ -233,4 +237,82 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             return 0
         }
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        switch collectionView.tag {
+        case Sections.trendingMovies.rawValue:
+            guard let trending = trendingMovies[indexPath.item].original_title else {return}
+            APICaller.shared.getMovie(with: trending) { [weak self] result in
+                switch result {
+                case .success(let result):
+                        guard let title = self?.trendingMovies[indexPath.item].overview else { return }
+                        let model = TitleDitailModel(labelText: trending, descritionLabel: title, webView: result)
+                        
+                        self?.delegate?.HomeViewControllerViewCellDidTapCell(CollectionViewTableViewCell(), model: model)
+                     
+                   
+                    print(result)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.trendingTv.rawValue:
+            guard let trending = trendingTvShows[indexPath.item].original_title ?? trendingTvShows[indexPath.item].original_name else { print("something went wrong")
+                return}
+            APICaller.shared.getMovie(with: trending) { result in
+                switch result {
+                case .success(let result):
+                    print(result)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.popular.rawValue:
+            guard let trending = popular[indexPath.item].original_title else {return}
+            APICaller.shared.getMovie(with: trending) { result in
+                switch result {
+                case .success(let result):
+                    print(result)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.upcoming.rawValue:
+            guard let trending = upcoming[indexPath.item].original_title else {return}
+            APICaller.shared.getMovie(with: trending) { result in
+                switch result {
+                case .success(let result):
+                    print(result)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        case Sections.topRated.rawValue:
+            guard let trending = topRated[indexPath.item].original_title else {return}
+            APICaller.shared.getMovie(with: trending) { result in
+                switch result {
+                case .success(let result):
+                    print(result)
+                case.failure(let error):
+                    print(error)
+                }
+            }
+        default:
+            return
+        }
+    }
+}
+
+extension HomeViewController: HomeViewControllerDelegate {
+    
+    func HomeViewControllerViewCellDidTapCell(_ cell: CollectionViewTableViewCell, model: TitleDitailModel) {
+        DispatchQueue.main.async { [weak self] in
+            let vc = TitlePreviewDetailViewController()
+            vc.configureProperties(with: model)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+        
+    }
+    
+    
 }
