@@ -7,12 +7,10 @@
 
 import UIKit
 
-
-
 class CollectionViewTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionViewTableViewCell"
-    
+    var collectionDelegate: CollectionViewDelegate = CollectionViewDelegate()
 
     private(set) lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -26,8 +24,8 @@ class CollectionViewTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
-//        collectionView.delegate = self
-//        collectionView.dataSource = self
+        collectionView.delegate = self.collectionDelegate
+        collectionView.dataSource = self.collectionDelegate
     }
     
     required init?(coder: NSCoder) {

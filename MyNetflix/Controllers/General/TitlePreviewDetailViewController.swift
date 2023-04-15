@@ -45,6 +45,7 @@ class TitlePreviewDetailViewController: UIViewController {
     }
     
     func configure() {
+        view.backgroundColor = .black
         [webView, titleLabel, descriptionLabel, downloadButton].forEach { property in
             view.addSubview(property)
             property.translatesAutoresizingMaskIntoConstraints = false
@@ -58,7 +59,9 @@ class TitlePreviewDetailViewController: UIViewController {
             titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: webView.centerXAnchor),
             
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor,constant: 10),
+            descriptionLabel.leadingAnchor.constraint(equalTo: webView.leadingAnchor),
+            descriptionLabel.trailingAnchor.constraint(equalTo: webView.trailingAnchor),
             descriptionLabel.centerXAnchor.constraint(equalTo: webView.centerXAnchor),
             
             downloadButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
@@ -71,7 +74,6 @@ class TitlePreviewDetailViewController: UIViewController {
         descriptionLabel.text = model.descritionLabel
         
         guard let url = URL(string: "https://www.youtube.com/embed/\(model.webView.id.videoId)") else {return}
-        
         webView.load(URLRequest(url: url))
     }
 }
