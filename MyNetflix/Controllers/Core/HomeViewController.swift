@@ -34,6 +34,9 @@ class HomeViewController: UIViewController {
     private var upcoming = [Movie]()
     private var topRated = [Movie]()
     
+    private var randomHeaderImage: Movie?
+    private var headerView: HeroHeaderUIView?
+    
     private let homeFeedTable: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
         table.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: CollectionViewTableViewCell.identifier)
@@ -47,9 +50,25 @@ class HomeViewController: UIViewController {
         view.addSubview(homeFeedTable)
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
-        homeFeedTable.tableHeaderView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
+        homeFeedTable.tableHeaderView = headerView
         
         configureNavBar()
+        
+        getaHeaderImage()
+        
+        func getaHeaderImage() {
+            APICaller.shared.getTrendingMovies { [weak self] result in
+                switch result {
+                case .success(let movies):
+                    let randomElement = movies.randomElement()
+                    self?.randomHeaderImage = randomElement
+                    self?.headerView?.configurePicture(with: self?.randomHeaderImage?.poster_path ?? "")
+                case.failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
         
         APICaller.shared.getTrendingMovies { results in
             switch results {
@@ -218,6 +237,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         header.textLabel?.text? = header.textLabel?.text?.capitalizeFirstLetter() ?? ""
     }
 }
+
 extension HomeViewController: CollectionViewSelectDelegate {
     func didSelect(with movie: Movie) {
         movieSelected(with: movie)

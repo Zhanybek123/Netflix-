@@ -104,7 +104,6 @@
 				D8D91FB1290046300002C9F2 /* Resources */,
 				D8D91FB0290046060002C9F2 /* Models */,
 				D8D91FAE290045F30002C9F2 /* Views */,
-				D8D91FAF290045FB0002C9F2 /* ViewModels */,
 				D8D91FA5290039E20002C9F2 /* Controllers */,
 				D8D91F952900377D0002C9F2 /* MainTabBarViewController.swift */,
 				D8D91F912900377D0002C9F2 /* AppDelegate.swift */,
@@ -134,13 +133,6 @@
 				D8DC02CA2922EFAB00C5DE3D /* TItleTableViewCell.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		D8D91FAF290045FB0002C9F2 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		D8D91FB0290046060002C9F2 /* Models */ = {

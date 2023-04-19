@@ -96,9 +96,7 @@ extension SearchViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
-        guard let query = searchBar.text,
-                !query.trimmingCharacters(in: .whitespaces).isEmpty,
-                query.trimmingCharacters(in: .whitespaces).count >= 3,
+        guard let query = searchBar.text, !query.trimmingCharacters(in: .whitespaces).isEmpty, query.trimmingCharacters(in: .whitespaces).count >= 3,
                 let resultsController = searchController.searchResultsController as? SearchResultViewController else {return}
         APICaller.shared.search(withQuery: query) { result in
             DispatchQueue.main.async {
@@ -112,6 +110,4 @@ extension SearchViewController: UISearchResultsUpdating {
             }
         }
     }
-    
-    
 }
