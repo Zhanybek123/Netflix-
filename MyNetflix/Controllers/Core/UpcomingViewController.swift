@@ -83,5 +83,27 @@ extension UpcomingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         140
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movieElement = movies[indexPath.item]
+        guard let movieTitle = movieElement.original_name ?? movieElement.original_title else {return}
+        guard let movieDescription = movieElement.overview else { return }
+       
+        APICaller.shared.getMovieFromYoutube(with: movieTitle) { [weak self] result in
+            switch result {
+            case.success(let movieResult):
+                DispatchQueue.main.async {
+                    let vc = TitlePreviewDetailViewController()
+                    vc.configureProperties(with: TitleDitailModel(labelText: movieTitle, descritionLabel: movieDescription, webView: movieResult))
+                    vc.modalPresentationStyle = .automatic
+                    vc.modalTransitionStyle = .flipHorizontal
+//                    self?.present(vc, animated: true)
+                    self?.navigationController?.present(vc, animated: true)
+                }
+            case.failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+        
+       
+    }
 }

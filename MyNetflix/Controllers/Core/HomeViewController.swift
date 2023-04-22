@@ -55,9 +55,9 @@ class HomeViewController: UIViewController {
         
         configureNavBar()
         
-        getaHeaderImage()
+        getHeaderImage()
         
-        func getaHeaderImage() {
+        func getHeaderImage() {
             APICaller.shared.getTrendingMovies { [weak self] result in
                 switch result {
                 case .success(let movies):
@@ -70,60 +70,60 @@ class HomeViewController: UIViewController {
             }
         }
         
-        APICaller.shared.getTrendingMovies { results in
+        APICaller.shared.getTrendingMovies { [weak self]  results in
             switch results {
             case.success(let results):
-                self.trendingMovies = results
+                self?.trendingMovies = results
                 DispatchQueue.main.async {
-                    self.homeFeedTable.reloadData()
+                    self?.homeFeedTable.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
             }
         }
         
-        APICaller.shared.getTrendingTVs { results in
+        APICaller.shared.getTrendingTVs { [weak self] results in
             switch results {
             case.success(let results):
-                self.trendingTvShows = results
+                self?.trendingTvShows = results
                 DispatchQueue.main.async {
-                    self.homeFeedTable.reloadData()
+                    self?.homeFeedTable.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
             }
         }
         
-        APICaller.shared.getPopularMovies { results in
+        APICaller.shared.getPopularMovies { [weak self] results in
             switch results {
             case.success(let results):
-                self.popular = results
+                self?.popular = results
                 DispatchQueue.main.async {
-                    self.homeFeedTable.reloadData()
+                    self?.homeFeedTable.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
             }
         }
         
-        APICaller.shared.getUpcomingMovies { results in
+        APICaller.shared.getUpcomingMovies { [weak self] results in
             switch results {
             case.success(let results):
-                self.upcoming = results
+                self?.upcoming = results
                 DispatchQueue.main.async {
-                    self.homeFeedTable.reloadData()
+                    self?.homeFeedTable.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
             }
         }
         
-        APICaller.shared.getTopRatedMovies { results in
+        APICaller.shared.getTopRatedMovies { [weak self] results in
             switch results {
             case.success(let results):
-                self.topRated = results
+                self?.topRated = results
                 DispatchQueue.main.async {
-                    self.homeFeedTable.reloadData()
+                    self?.homeFeedTable.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
@@ -153,16 +153,17 @@ class HomeViewController: UIViewController {
     
     func movieSelected(with movie: Movie) {
         guard let title = movie.original_title ?? movie.original_name else {return}
-            APICaller.shared.getMovie(with: title) { [weak self] result in
+            APICaller.shared.getMovieFromYoutube(with: title) { [weak self] result in
                 switch result {
                 case .success(let result):
                     DispatchQueue.main.async { [weak self] in
                         guard let overView = movie.overview else { return }
                         let model = TitleDitailModel(labelText: title, descritionLabel: overView, webView: result)
-                    
                         let vc = TitlePreviewDetailViewController()
                         vc.configureProperties(with: model)
-                        self?.navigationController?.pushViewController(vc, animated: true)
+                        vc.modalPresentationStyle = .fullScreen
+                        vc.modalTransitionStyle = .partialCurl
+                        self?.navigationController?.present(vc, animated: true)
                     print(result)
                     }
                 case.failure(let error):
