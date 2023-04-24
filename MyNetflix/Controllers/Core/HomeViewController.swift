@@ -161,8 +161,8 @@ class HomeViewController: UIViewController {
                         let model = TitleDitailModel(labelText: title, descritionLabel: overView, webView: result)
                         let vc = TitlePreviewDetailViewController()
                         vc.configureProperties(with: model)
-                        vc.modalPresentationStyle = .fullScreen
-                        vc.modalTransitionStyle = .partialCurl
+                        vc.modalPresentationStyle = .formSheet
+                        vc.modalTransitionStyle = .flipHorizontal
                         self?.navigationController?.present(vc, animated: true)
                     print(result)
                     }
