@@ -103,7 +103,5 @@ extension UpcomingViewController: UITableViewDelegate, UITableViewDataSource {
                 print(error.localizedDescription)
             }
         }
-        
-       
     }
 }

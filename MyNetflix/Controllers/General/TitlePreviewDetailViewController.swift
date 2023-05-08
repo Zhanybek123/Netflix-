@@ -10,10 +10,12 @@ import WebKit
 
 class TitlePreviewDetailViewController: UIViewController {
     
-    private let titleLabel: UILabel = {
+    private var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Something for now"
         label.font = .systemFont(ofSize: 22)
+        label.numberOfLines = 0
+        label.textAlignment = .center
         return label
     }()
     
@@ -40,8 +42,6 @@ class TitlePreviewDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-        
-        
     }
     
     func configure() {
@@ -58,6 +58,8 @@ class TitlePreviewDetailViewController: UIViewController {
             
             titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: webView.centerXAnchor),
+            titleLabel.leftAnchor.constraint(equalTo: webView.leftAnchor),
+            titleLabel.rightAnchor.constraint(equalTo: webView.rightAnchor),
             
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor,constant: 10),
             descriptionLabel.leadingAnchor.constraint(equalTo: webView.leadingAnchor),

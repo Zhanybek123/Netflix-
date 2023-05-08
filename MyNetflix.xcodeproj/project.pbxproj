@@ -165,11 +165,11 @@
 		D8DC02D0292AB27800C5DE3D /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				D8CB8D2929EB1CE10021A971 /* DataSource */,
 				D8D91FA629003A400002C9F2 /* HomeViewController.swift */,
 				D8D91FA829003A5D0002C9F2 /* UpcomingViewController.swift */,
 				D8D91FAA29003ACD0002C9F2 /* SearchViewController.swift */,
 				D8D91FAC29003AF70002C9F2 /* DownloadsViewController.swift */,
+				D8CB8D2929EB1CE10021A971 /* DataSource */,
 			);
 			path = Core;
 			sourceTree = "<group>";

@@ -7,9 +7,14 @@
 
 import UIKit
 
+protocol SearchViewSelectDelegate: AnyObject {
+    func didSelect(with movie: Movie)
+}
+
 class SearchResultViewController: UIViewController {
     
     var searchResults: [Movie] = []
+    weak var delegate: SearchViewSelectDelegate?
     
     let movieCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -30,7 +35,6 @@ class SearchResultViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         movieCollectionView.frame = view.bounds
-        
     }
 }
 
@@ -46,8 +50,8 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         return cell
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        searchResults.count
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        delegate?.didSelect(with: searchResults[indexPath.item])
     }
-    
 }

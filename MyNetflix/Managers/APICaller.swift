@@ -139,7 +139,6 @@ class APICaller {
     func search(withQuery query: String, completion: @escaping (Result<[Movie], Error>) -> Void ) {
         
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
-        
         guard let url = URL(string: "\(Constants.baseURL)/3/search/movie?api_key=\(Constants.APIKey)&query=\(query)") else {return}
         
         let session = URLSession.shared.dataTask(with: url) { data, response, error in
@@ -172,5 +171,25 @@ class APICaller {
         }
         session.resume()
     }
+    
+    
+    func getCheck(with query: String) {
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+        guard let url = URL(string: "\(Constants.YoutubeBaseURL)q=\(query)&key=\(Constants.YoutubeAPIKey)") else {return}
+        
+        let session = URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {return}
+            do {
+                let result = try JSONSerialization.jsonObject(with: data)
+                print(data)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        session.resume()
+    }
+
 }
+
+
 

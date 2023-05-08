@@ -51,19 +51,21 @@ class HomeViewController: UIViewController {
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
+        headerView?.playButtonDelegate = self
         homeFeedTable.tableHeaderView = headerView
         
         configureNavBar()
         
         getHeaderImage()
         
+        APICaller.shared.getCheck(with: "harry")
+        
         func getHeaderImage() {
             APICaller.shared.getTrendingMovies { [weak self] result in
                 switch result {
                 case .success(let movies):
-                    let randomElement = movies.randomElement()
-                    self?.randomHeaderImage = randomElement
-                    self?.headerView?.configurePicture(with: self?.randomHeaderImage?.poster_path ?? "")
+                    guard let randomElement = movies.randomElement() else { return }
+                    self?.headerView?.configure(with: randomElement)
                 case.failure(let error):
                     print(error.localizedDescription)
                 }
@@ -131,6 +133,11 @@ class HomeViewController: UIViewController {
         }
     }
     
+    func openDetailViewController() {
+        let vc = UIViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     private func configureNavBar() {
         navigationBarAppearance.configureWithOpaqueBackground()
         navigationBarAppearance.backgroundColor = .black
@@ -153,23 +160,31 @@ class HomeViewController: UIViewController {
     
     func movieSelected(with movie: Movie) {
         guard let title = movie.original_title ?? movie.original_name else {return}
-            APICaller.shared.getMovieFromYoutube(with: title) { [weak self] result in
-                switch result {
-                case .success(let result):
-                    DispatchQueue.main.async { [weak self] in
-                        guard let overView = movie.overview else { return }
-                        let model = TitleDitailModel(labelText: title, descritionLabel: overView, webView: result)
-                        let vc = TitlePreviewDetailViewController()
-                        vc.configureProperties(with: model)
-                        vc.modalPresentationStyle = .formSheet
-                        vc.modalTransitionStyle = .flipHorizontal
-                        self?.navigationController?.present(vc, animated: true)
-                    print(result)
-                    }
-                case.failure(let error):
-                    print(error)
+        guard let overView = movie.overview else { return }
+        getMovieFromYoutube(withTitle: title, description: overView)
+    }
+    
+    func getMovieFromYoutube(withTitle: String, description: String) {
+        APICaller.shared.getMovieFromYoutube(with: withTitle) { [weak self] result in
+            switch result {
+            case .success(let result):
+                DispatchQueue.main.async { [weak self] in
+                    self?.openDetailViewController(withText: withTitle , descritionLabel: description, webView: result)
+                    //                print(result)
+                }
+            case.failure(let error):
+                print("\(error)  some shit happend")
             }
         }
+    }
+    
+    func openDetailViewController(withText: String, descritionLabel: String, webView: VideoElement) {
+        let model = TitleDitailModel(labelText: withText, descritionLabel: descritionLabel, webView: webView)
+        let vc = TitlePreviewDetailViewController()
+        vc.configureProperties(with: model)
+        vc.modalPresentationStyle = .formSheet
+        vc.modalTransitionStyle = .flipHorizontal
+        self.navigationController?.present(vc, animated: true)
     }
 }
 
@@ -245,3 +260,8 @@ extension HomeViewController: CollectionViewSelectDelegate {
     }
 }
 
+extension HomeViewController: PlayButtonPressedDelegate {
+    func didPressPlayButton(movie: Movie) {
+        movieSelected(with: movie)
+    }
+}

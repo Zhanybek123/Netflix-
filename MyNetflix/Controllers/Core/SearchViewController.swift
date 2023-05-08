@@ -47,12 +47,12 @@ class SearchViewController: UIViewController {
     }
     
     func fetchData() {
-        APICaller.shared.getDiscoverMovie { result in
+        APICaller.shared.getDiscoverMovie { [weak self] result in
             switch result{
             case.success(let movies):
-                self.movies = movies
+                self?.movies = movies
                 DispatchQueue.main.async {
-                    self.searchTableView.reloadData()
+                    self?.searchTableView.reloadData()
                 }
             case.failure(let error):
                 print(error.localizedDescription)
@@ -71,11 +71,37 @@ class SearchViewController: UIViewController {
         navigationItem.scrollEdgeAppearance = appearance
     }
     
+    
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         searchcontroller.searchBar.searchTextField.textColor = .black
         searchcontroller.searchBar.tintColor = .white
         searchcontroller.searchBar.searchTextField.backgroundColor = .white
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let movieElement = movies[indexPath.item]
+        guard let movieTitle = movieElement.original_name ?? movieElement.original_title else {return}
+        guard let movieDescription = movieElement.overview else { return }
+       
+        APICaller.shared.getMovieFromYoutube(with: movieTitle) { [weak self] result in
+            switch result {
+            case.success(let movieResult):
+                DispatchQueue.main.async {
+                    let vc = TitlePreviewDetailViewController()
+                    vc.configureProperties(with: TitleDitailModel(labelText: movieTitle, descritionLabel: movieDescription, webView: movieResult))
+                    vc.modalPresentationStyle = .automatic
+                    vc.modalTransitionStyle = .flipHorizontal
+//                    self?.present(vc, animated: true)
+                    self?.navigationController?.present(vc, animated: true)
+                }
+            case.failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 
@@ -90,6 +116,26 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         cell.configure(with: movies[indexPath.item].poster_path ?? "")
         return cell
     }
+    
+    func movieSelected(with movie: Movie) {
+        guard let title = movie.original_title ?? movie.original_name else {return}
+            APICaller.shared.getMovieFromYoutube(with: title) { [weak self] result in
+                switch result {
+                case .success(let result):
+                        guard let overView = movie.overview else { return }
+                        let model = TitleDitailModel(labelText: title, descritionLabel: overView, webView: result)
+                    DispatchQueue.main.async { [weak self] in
+                        let vc = TitlePreviewDetailViewController()
+                        vc.configureProperties(with: model)
+                        vc.modalPresentationStyle = .formSheet
+                        vc.modalTransitionStyle = .flipHorizontal
+                        self?.navigationController?.present(vc, animated: true)
+                    }
+                case.failure(let error):
+                    print(error)
+            }
+        }
+    }
 }
 
 extension SearchViewController: UISearchResultsUpdating {
@@ -103,11 +149,18 @@ extension SearchViewController: UISearchResultsUpdating {
                 switch result {
                 case.success(let titles):
                     resultsController.searchResults = titles
+                    resultsController.delegate = self
                     resultsController.movieCollectionView.reloadData()
                 case.failure(let error):
                     print(error.localizedDescription)
                 }
             }
         }
+    }
+}
+
+extension SearchViewController: SearchViewSelectDelegate {
+    func didSelect(with movie: Movie) {
+        movieSelected(with: movie)
     }
 }

@@ -8,6 +8,8 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
+    
+    var allViewControllers: [UINavigationController] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,6 +18,8 @@ class MainTabBarController: UITabBarController {
         let vc2 = UINavigationController(rootViewController: UpcomingViewController())
         let vc3 = UINavigationController(rootViewController: SearchViewController())
         let vc4 = UINavigationController(rootViewController: DownloadsViewController())
+        
+        allViewControllers = [vc1, vc2, vc3, vc4]
         
         vc1.tabBarItem.image = UIImage(systemName: "house")
         vc2.tabBarItem.image = UIImage(systemName: "play.circle")
@@ -31,11 +35,6 @@ class MainTabBarController: UITabBarController {
         tabBar.barTintColor = .black
         
         setViewControllers([vc1, vc2, vc3, vc4], animated: true)
-        
-        
-        
     }
-
-
 }
 

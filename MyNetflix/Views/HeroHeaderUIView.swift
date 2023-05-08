@@ -8,7 +8,13 @@
 import UIKit
 import SDWebImage
 
+protocol PlayButtonPressedDelegate: AnyObject {
+    func didPressPlayButton(movie: Movie)
+}
+
 class HeroHeaderUIView: UIView {
+    
+    weak var playButtonDelegate: PlayButtonPressedDelegate?
     
     private let downloadButton: UIButton = {
         let button = UIButton()
@@ -26,6 +32,7 @@ class HeroHeaderUIView: UIView {
         button.layer.borderColor = UIColor.white.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 5
+        button.clipsToBounds = true
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -37,6 +44,8 @@ class HeroHeaderUIView: UIView {
         imageView.image = UIImage(named: "movie")
         return imageView
     }()
+    
+    private var movieName: Movie?
     
     private func addGradient() {
         let gradientLayer = CAGradientLayer()
@@ -55,12 +64,20 @@ class HeroHeaderUIView: UIView {
         addSubview(playButton)
         addSubview(downloadButton)
         applyConstraints()
+        playButton.addTarget(self, action: #selector(didPressPlayButton), for: .touchUpInside)
     }
     
-    func configurePicture(with picture: String) {
-        guard let picturePath = URL(string: "https://image.tmdb.org/t/p/w500\(picture)") else {return}
+    @objc func didPressPlayButton() {
+        print("Did tapped")
+        guard let movie = movieName else { return }
+        playButtonDelegate?.didPressPlayButton(movie: movie)
+    }
+    
+    func configure(with movie: Movie) {
+        guard let picturePath = URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path ?? "")") else {return}
         
         heroImageView.sd_setImage(with: picturePath)
+        movieName = movie
     }
     
     private func applyConstraints() {
