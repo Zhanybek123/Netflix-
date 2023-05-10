@@ -173,21 +173,21 @@ class APICaller {
     }
     
     
-    func getCheck(with query: String) {
-        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
-        guard let url = URL(string: "\(Constants.YoutubeBaseURL)q=\(query)&key=\(Constants.YoutubeAPIKey)") else {return}
-        
-        let session = URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data, error == nil else {return}
-            do {
-                let result = try JSONSerialization.jsonObject(with: data)
-                print(data)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        session.resume()
-    }
+//    func getCheck(with query: String) {
+//        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+//        guard let url = URL(string: "\(Constants.YoutubeBaseURL)q=\(query)&key=\(Constants.YoutubeAPIKey)") else {return}
+//
+//        let session = URLSession.shared.dataTask(with: url) { data, _, error in
+//            guard let data = data, error == nil else {return}
+//            do {
+//                let result = try JSONSerialization.jsonObject(with: data)
+//                print(data)
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        session.resume()
+//    }
 
 }
 

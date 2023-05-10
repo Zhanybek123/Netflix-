@@ -11,6 +11,7 @@ class CollectionViewTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionViewTableViewCell"
     var collectionDelegate: CollectionViewDelegate = CollectionViewDelegate()
+    
 
     private(set) lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()

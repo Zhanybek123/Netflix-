@@ -50,15 +50,13 @@ class HomeViewController: UIViewController {
         view.addSubview(homeFeedTable)
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
+        
         headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
         headerView?.playButtonDelegate = self
         homeFeedTable.tableHeaderView = headerView
         
         configureNavBar()
-        
         getHeaderImage()
-        
-        APICaller.shared.getCheck(with: "harry")
         
         func getHeaderImage() {
             APICaller.shared.getTrendingMovies { [weak self] result in

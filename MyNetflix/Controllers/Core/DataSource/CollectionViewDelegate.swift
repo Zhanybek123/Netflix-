@@ -17,6 +17,18 @@ class CollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollection
     var data: [Movie] = []
     weak var selectDelegate: CollectionViewSelectDelegate?
     
+    func downloadTitleAt(indexPaths: [IndexPath]) {
+        
+//        TitleItemName.shared.downloadTitleWith(model: data[indexPaths.count]) { result in
+//            switch result {
+//            case .success():
+//                print("Downloaded into database")
+//            case .failure(let error):
+//                print(error.localizedDescription)
+//            }
+//        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.count
     }
@@ -33,5 +45,17 @@ class CollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollection
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectDelegate?.didSelect(with: data[indexPath.item])
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        let config = UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil) { _ in
+                let downloadAction = UIAction(title: "Download", subtitle: "Please press to download", image: UIImage(systemName: "square.and.arrow.down"), identifier: nil, discoverabilityTitle: nil, state: .off) { _ in
+                    self.downloadTitleAt(indexPaths: indexPaths)
+                }
+                return UIMenu(title: "Options", image: nil, identifier: nil, options: .displayInline, children: [downloadAction])
+            }
+        return config
     }
 }
