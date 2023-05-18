@@ -1,9 +1,9 @@
 Movies catalog Netflix
 
 Features:
-Catches variety of data from movie APRs
-Smooth animations that create great user experience 
-Saving movies in local storage through CoreData
+Catches variety of data from movie APIs,
+smooth animations that create great user experience, 
+saving movies in local storage through CoreData
 
 Introduction:
 
